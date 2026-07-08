@@ -19,7 +19,11 @@ struct CurrencyBadge: View {
         }
         .padding(.vertical, 6)
         .padding(.horizontal, 12)
-        .background(Capsule().fill(Color.white.opacity(0.9)))
+        .background(
+            Capsule()
+                .fill(Color.white.opacity(0.92).kawaiiGlossyGradient)
+                .overlay(Capsule().strokeBorder(Color.white.opacity(0.6), lineWidth: 1))
+        )
         .kawaiiSoftShadow()
     }
 }

@@ -34,7 +34,7 @@ struct DailyRewardsView: View {
             .opacity(viewModel.hasUnclaimedReward ? 1 : 0.5)
             .padding()
         }
-        .background(KawaiiPalette.creamWhite.ignoresSafeArea())
+        .kawaiiDecorativeBackdrop()
         .navigationBarHidden(true)
         .sheet(isPresented: $viewModel.isShowingWheel) {
             LuckyWheelView(viewModel: viewModel)

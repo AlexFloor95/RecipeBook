@@ -16,7 +16,7 @@ final class CollectibleNode: SKNode {
         configurePhysics()
         position.y = groundY + laneHeight
 
-        // Gentle bob so pickups feel alive even without frame animation.
+        // Gentle bob + gentle scale pulse so pickups feel alive and inviting.
         run(.repeatForever(.sequence([
             .moveBy(x: 0, y: 8, duration: 0.5),
             .moveBy(x: 0, y: -8, duration: 0.5),
@@ -26,13 +26,35 @@ final class CollectibleNode: SKNode {
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     private func buildPlaceholderVisual() {
-        let glow = SKShapeNode(circleOfRadius: Self.radius)
-        glow.fillColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.8)
-        glow.strokeColor = .clear
+        let accentColor = UIColor(hex: collectibleType.accentHex)
+        let diameter = Self.radius * 2
+
+        // Soft outer glow ring, gently pulsing to draw the eye without
+        // being distracting during fast-paced play.
+        let glow = SKSpriteNode(texture: ParticleTextureFactory.softDot(color: accentColor, diameter: diameter * 1.9))
+        glow.size = CGSize(width: diameter * 1.9, height: diameter * 1.9)
+        glow.alpha = 0.55
+        glow.zPosition = -1
         addChild(glow)
+        glow.run(.repeatForever(.sequence([
+            .scale(to: 1.15, duration: 0.6),
+            .scale(to: 0.95, duration: 0.6),
+        ])))
+
+        // Glossy backing sphere instead of a flat white disc.
+        let backing = SKSpriteNode(texture: GradientTextureFactory.shadedSphere(baseColor: accentColor, diameter: diameter))
+        backing.size = CGSize(width: diameter, height: diameter)
+        addChild(backing)
+
+        let ring = SKShapeNode(circleOfRadius: Self.radius)
+        ring.strokeColor = .white
+        ring.lineWidth = 2
+        ring.fillColor = .clear
+        ring.alpha = 0.8
+        addChild(ring)
 
         let label = SKLabelNode(text: collectibleType.placeholderEmoji)
-        label.fontSize = Self.radius * 1.6
+        label.fontSize = Self.radius * 1.5
         label.verticalAlignmentMode = .center
         label.horizontalAlignmentMode = .center
         addChild(label)
@@ -59,8 +81,9 @@ final class CollectibleNode: SKNode {
         position.y += dy / distance * step
     }
 
-    func playCollectedEffect(in scene: SKNode, accentColor: UIColor) {
-        ParticleFactory.fireAndForget(ParticleFactory.collectSparkle(color: accentColor), at: position, in: scene)
+    func playCollectedEffect(in scene: SKNode) {
+        let tint = UIColor(hex: collectibleType.accentHex)
+        ParticleFactory.fireAndForget(ParticleFactory.collectSparkle(color: tint), at: position, in: scene)
         removeFromParent()
     }
 }

@@ -1,9 +1,11 @@
 import SpriteKit
 import UIKit
 
-/// A single hazard scrolling toward the player. Visuals are a rounded shape
-/// plus an emoji placeholder label (see `ObstacleType.placeholderEmoji`) —
-/// swap `buildPlaceholderVisual` for real sprite art later.
+/// A single hazard scrolling toward the player. Visuals are a soft gradient
+/// "sticker" card with a warm cautionary border, a grounded drop shadow, a
+/// gentle idle wobble, plus an emoji placeholder label
+/// (see `ObstacleType.placeholderEmoji`) — swap `buildPlaceholderVisual` for
+/// real sprite art later.
 final class ObstacleNode: SKNode {
     let obstacleType: ObstacleType
 
@@ -19,17 +21,40 @@ final class ObstacleNode: SKNode {
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     private func buildPlaceholderVisual() {
-        let shape = SKShapeNode(rectOf: CGSize(width: obstacleType.width, height: obstacleType.height), cornerRadius: 14)
-        shape.fillColor = UIColor(hex: "#FFFFFF").withAlphaComponent(0.9)
-        shape.strokeColor = UIColor(hex: "#4A3B36").withAlphaComponent(0.25)
-        shape.lineWidth = 2
-        addChild(shape)
+        let cardSize = CGSize(width: obstacleType.width, height: obstacleType.height)
+
+        let shadow = SKSpriteNode(texture: GradientTextureFactory.softShadow(size: CGSize(width: cardSize.width * 0.9, height: cardSize.height * 0.35)))
+        shadow.size = CGSize(width: cardSize.width * 0.9, height: cardSize.height * 0.35)
+        shadow.position = CGPoint(x: 0, y: -cardSize.height / 2 + 4)
+        shadow.zPosition = -1
+        addChild(shadow)
+
+        let card = SKSpriteNode(texture: GradientTextureFactory.roundedGradientCard(
+            topColor: UIColor(hex: "#FFF6E9"),
+            bottomColor: UIColor(hex: "#FFDCC2"),
+            size: cardSize,
+            cornerRadius: 16,
+            borderColor: UIColor(hex: "#FF8A65"),
+            borderWidth: 3
+        ))
+        card.size = cardSize
+        addChild(card)
 
         let label = SKLabelNode(text: obstacleType.placeholderEmoji)
-        label.fontSize = min(obstacleType.width, obstacleType.height) * 0.9
+        label.fontSize = min(obstacleType.width, obstacleType.height) * 0.85
         label.verticalAlignmentMode = .center
         label.horizontalAlignmentMode = .center
+        label.position = CGPoint(x: 0, y: -2)
         addChild(label)
+
+        // A gentle, slightly-worried idle wobble so obstacles never look inert.
+        let wobble = SKAction.sequence([
+            .rotate(byAngle: 0.06, duration: 0.5),
+            .rotate(byAngle: -0.12, duration: 1.0),
+            .rotate(byAngle: 0.06, duration: 0.5),
+        ])
+        wobble.timingMode = .easeInEaseOut
+        run(.repeatForever(wobble))
     }
 
     private func configurePhysics() {

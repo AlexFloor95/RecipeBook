@@ -62,6 +62,21 @@ enum CollectibleType: String, Codable, CaseIterable, Hashable {
         }
     }
 
+    /// Pastel tint used for the glossy backing circle and sparkle/particle
+    /// color wherever this pickup is rendered, so a mochi always reads warm
+    /// and a star always reads golden regardless of the active world palette.
+    var accentHex: String {
+        switch self {
+        case .mochi: return "#FFD8E8"
+        case .bubbleTea: return "#C9A27A"
+        case .flower: return "#FF9EC4"
+        case .heart: return "#FF6F91"
+        case .star: return "#FFD166"
+        case .catPaw: return "#FFB37A"
+        case .cocoToken: return "#F4C542"
+        }
+    }
+
     var placeholderEmoji: String {
         switch self {
         case .mochi: return "🍡"

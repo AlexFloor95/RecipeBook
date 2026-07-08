@@ -9,13 +9,18 @@ extension View {
         self.shadow(color: KawaiiPalette.cocoaBrown.opacity(0.18), radius: 10, x: 0, y: 6)
     }
 
-    /// Wraps content in a rounded, pastel card — the base building block for
-    /// most panels (shop rows, mission rows, settings sections, etc).
+    /// Wraps content in a rounded, pastel card with a subtle top-to-bottom
+    /// gloss and a faint edge highlight — the base building block for most
+    /// panels (shop rows, mission rows, settings sections, etc).
     func kawaiiCard(fill: Color = .white, cornerRadius: CGFloat = 24) -> some View {
         self
             .background(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .fill(fill)
+                    .fill(fill.kawaiiGlossyGradient)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                            .strokeBorder(Color.white.opacity(0.5), lineWidth: 1)
+                    )
             )
             .kawaiiSoftShadow()
     }
@@ -25,6 +30,22 @@ extension View {
         self.overlay(
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                 .stroke(color, lineWidth: lineWidth)
+        )
+    }
+
+    /// A soft, blurred pastel backdrop of overlapping circles — used behind
+    /// full-screen menus to give the plain cream background some depth
+    /// without needing a painted illustration.
+    func kawaiiDecorativeBackdrop() -> some View {
+        self.background(
+            ZStack {
+                KawaiiPalette.creamWhite
+                Circle().fill(KawaiiPalette.mochiPink.opacity(0.22)).frame(width: 260).blur(radius: 40).offset(x: -140, y: -260)
+                Circle().fill(KawaiiPalette.skyBlue.opacity(0.22)).frame(width: 220).blur(radius: 40).offset(x: 160, y: -180)
+                Circle().fill(KawaiiPalette.honeyYellow.opacity(0.22)).frame(width: 240).blur(radius: 44).offset(x: -120, y: 340)
+                Circle().fill(KawaiiPalette.lavender.opacity(0.2)).frame(width: 260).blur(radius: 44).offset(x: 150, y: 420)
+            }
+            .ignoresSafeArea()
         )
     }
 }

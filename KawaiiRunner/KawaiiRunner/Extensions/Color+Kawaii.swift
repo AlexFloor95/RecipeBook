@@ -23,6 +23,30 @@ extension Color {
     init(hex: String) {
         self.init(uiColor: UIColor(hex: hex))
     }
+
+    /// A lighter variant of this color, used to build the subtle top-to-
+    /// bottom gradients that give buttons/cards a glossy "candy" look
+    /// instead of a flat fill.
+    func kawaiiLightened(by fraction: CGFloat = 0.14) -> Color {
+        var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        UIColor(self).getHue(&h, saturation: &s, brightness: &b, alpha: &a)
+        return Color(hue: h, saturation: max(0, s - fraction * 0.5), brightness: min(1, b + fraction), opacity: a)
+    }
+
+    /// A darker variant of this color, used for the base of glossy gradients
+    /// and for subtle pressed/shaded states.
+    func kawaiiDarkened(by fraction: CGFloat = 0.14) -> Color {
+        var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        UIColor(self).getHue(&h, saturation: &s, brightness: &b, alpha: &a)
+        return Color(hue: h, saturation: min(1, s + fraction * 0.3), brightness: max(0, b * (1 - fraction)), opacity: a)
+    }
+
+    /// A soft top-to-bottom gradient from a lightened to a base/darkened
+    /// tone of this color — the one gradient recipe reused by every glossy
+    /// button/card/badge in the app.
+    var kawaiiGlossyGradient: LinearGradient {
+        LinearGradient(colors: [kawaiiLightened(), self], startPoint: .top, endPoint: .bottom)
+    }
 }
 
 /// Semantic app-wide kawaii palette, layered on top of the raw per-world hex

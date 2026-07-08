@@ -8,23 +8,16 @@ struct HomeView: View {
     @Binding var isShowingGame: Bool
 
     var body: some View {
-        ZStack {
-            LinearGradient(
-                colors: [KawaiiPalette.creamWhite, KawaiiPalette.mochiPink.opacity(0.25)],
-                startPoint: .top, endPoint: .bottom
-            )
-            .ignoresSafeArea()
-
-            ScrollView {
-                VStack(spacing: 20) {
-                    header
-                    heroPreview
-                    playButton
-                    shortcutGrid
-                }
-                .padding()
+        ScrollView {
+            VStack(spacing: 20) {
+                header
+                heroPreview
+                playButton
+                shortcutGrid
             }
+            .padding()
         }
+        .kawaiiDecorativeBackdrop()
         .navigationBarHidden(true)
         .onAppear { viewModel.refresh() }
     }
@@ -52,10 +45,12 @@ struct HomeView: View {
             ForEach(CharacterType.allCases) { character in
                 VStack(spacing: 6) {
                     Circle()
-                        .fill(Color(hex: character.themeColorHex).gradient)
+                        .fill(Color(hex: character.themeColorHex).kawaiiGlossyGradient)
                         .frame(width: 84, height: 84)
                         .overlay(Text(character == .debbie ? "🌸" : "🐾").font(.system(size: 34)))
+                        .overlay(Circle().strokeBorder(Color.white.opacity(0.6), lineWidth: 2))
                         .kawaiiOutline(color: character == viewModel.profile.selectedLeadCharacter ? KawaiiPalette.honeyYellow : .clear, lineWidth: 4, cornerRadius: 42)
+                        .kawaiiSoftShadow()
                     Text(character.displayName)
                         .font(.system(.caption, design: .rounded)).bold()
                         .foregroundStyle(KawaiiPalette.textDark)

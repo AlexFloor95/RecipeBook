@@ -25,7 +25,7 @@ struct MissionsView: View {
                 .padding(.horizontal)
             }
         }
-        .background(KawaiiPalette.creamWhite.ignoresSafeArea())
+        .kawaiiDecorativeBackdrop()
         .navigationBarHidden(true)
     }
 }

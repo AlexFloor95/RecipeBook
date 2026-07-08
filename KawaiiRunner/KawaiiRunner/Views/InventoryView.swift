@@ -25,7 +25,7 @@ struct InventoryView: View {
                 }
             }
         }
-        .background(KawaiiPalette.creamWhite.ignoresSafeArea())
+        .kawaiiDecorativeBackdrop()
         .navigationBarHidden(true)
     }
 

@@ -19,7 +19,7 @@ struct CharacterSelectView: View {
                 .padding()
             }
         }
-        .background(KawaiiPalette.creamWhite.ignoresSafeArea())
+        .kawaiiDecorativeBackdrop()
         .navigationBarHidden(true)
     }
 

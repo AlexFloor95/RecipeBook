@@ -42,7 +42,7 @@ struct LeaderboardView: View {
                 }
             }
         }
-        .background(KawaiiPalette.creamWhite.ignoresSafeArea())
+        .kawaiiDecorativeBackdrop()
         .navigationBarHidden(true)
     }
 

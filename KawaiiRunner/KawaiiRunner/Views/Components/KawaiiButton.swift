@@ -1,9 +1,10 @@
 import SwiftUI
 
 /// The single reusable button style used across every menu screen: a big,
-/// rounded, pastel-filled pill with a soft shadow and a bouncy press
-/// animation. Keeping one component here (rather than hand-styling buttons
-/// per screen) is what makes the whole app feel cohesive.
+/// rounded, glossy "candy" pill (gradient fill + a soft top highlight
+/// streak) with a soft shadow and a bouncy press animation. Keeping one
+/// component here (rather than hand-styling buttons per screen) is what
+/// makes the whole app feel cohesive.
 struct KawaiiButton: View {
     enum Emphasis { case primary, secondary, destructive }
 
@@ -27,11 +28,28 @@ struct KawaiiButton: View {
             .padding(.horizontal, 28)
             .frame(maxWidth: .infinity)
             .background(
-                Capsule().fill(backgroundColor)
+                Capsule()
+                    .fill(backgroundColor.kawaiiGlossyGradient)
+                    .overlay(glossHighlight)
+                    .overlay(Capsule().strokeBorder(Color.white.opacity(0.35), lineWidth: 1))
             )
             .kawaiiSoftShadow()
         }
         .buttonStyle(.bouncy)
+    }
+
+    /// A soft translucent streak across the top third of the pill, the
+    /// classic "glossy candy button" highlight.
+    private var glossHighlight: some View {
+        GeometryReader { geo in
+            Capsule()
+                .fill(Color.white.opacity(0.35))
+                .frame(height: geo.size.height * 0.4)
+                .blur(radius: 2)
+                .padding(.horizontal, geo.size.height * 0.3)
+                .offset(y: -geo.size.height * 0.22)
+                .mask(Capsule().padding(2))
+        }
     }
 
     private var backgroundColor: Color {

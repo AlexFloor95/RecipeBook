@@ -23,7 +23,7 @@ struct ShopView: View {
                 .padding()
             }
         }
-        .background(KawaiiPalette.creamWhite.ignoresSafeArea())
+        .kawaiiDecorativeBackdrop()
         .navigationBarHidden(true)
     }
 
@@ -49,7 +49,7 @@ struct ShopView: View {
                             .padding(.vertical, 8)
                             .padding(.horizontal, 16)
                             .background(
-                                Capsule().fill(viewModel.selectedCategory == category ? KawaiiPalette.mochiPink : Color.white)
+                                Capsule().fill((viewModel.selectedCategory == category ? KawaiiPalette.mochiPink : Color.white).kawaiiGlossyGradient)
                             )
                             .foregroundStyle(viewModel.selectedCategory == category ? .white : KawaiiPalette.textDark)
                     }
@@ -95,14 +95,14 @@ private struct ShopItemCard: View {
                 Text(viewModel.isEquipped(item) ? "Equipped" : "Equip")
                     .font(.system(.caption2, design: .rounded)).bold()
                     .padding(.vertical, 6).padding(.horizontal, 14)
-                    .background(Capsule().fill(viewModel.isEquipped(item) ? KawaiiPalette.matchaGreen : Color.white))
+                    .background(Capsule().fill((viewModel.isEquipped(item) ? KawaiiPalette.matchaGreen : Color.white).kawaiiGlossyGradient))
             }
             .disabled(viewModel.isEquipped(item))
         } else if item.currency == .premium {
             Text("Premium")
                 .font(.system(.caption2, design: .rounded)).bold()
                 .padding(.vertical, 6).padding(.horizontal, 14)
-                .background(Capsule().fill(KawaiiPalette.honeyYellow))
+                .background(Capsule().fill(KawaiiPalette.honeyYellow.kawaiiGlossyGradient))
         } else {
             Button {
                 viewModel.purchase(item)
@@ -113,7 +113,7 @@ private struct ShopItemCard: View {
                 }
                 .font(.system(.caption2, design: .rounded)).bold()
                 .padding(.vertical, 6).padding(.horizontal, 14)
-                .background(Capsule().fill(viewModel.canAfford(item) ? KawaiiPalette.mochiPink : Color.gray.opacity(0.3)))
+                .background(Capsule().fill((viewModel.canAfford(item) ? KawaiiPalette.mochiPink : Color.gray.opacity(0.3)).kawaiiGlossyGradient))
                 .foregroundStyle(viewModel.canAfford(item) ? .white : .secondary)
             }
             .disabled(!viewModel.canAfford(item))

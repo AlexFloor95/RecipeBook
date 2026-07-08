@@ -7,10 +7,13 @@ collecting mochi/boba/stars, and helping each other survive. Sessions are
 tuned for 2–5 minutes: easy to pick up, hard to put down.
 
 This scaffold is **code-complete and ready to open in Xcode 16+** on iOS 18.
-It ships with zero external art or audio assets — every visual is drawn
-procedurally (SpriteKit shapes + emoji placeholders) and every sound effect
-is a documented "please add this file" slot — so the whole game runs and is
-fully playable today, and is a drop-in target for real art/audio/IAP
+It ships with no external sprite-art or audio *assets*, but every visual is
+drawn procedurally at a genuinely polished level — glossy sphere-shaded
+characters, gradient sticker cards, a multi-layer parallax sky with a
+sun/moon and drifting clouds, and a consistent glossy "candy UI" — using
+runtime-baked Core Graphics textures (see "Graphics" below). Every sound
+effect is a documented "please add this file" slot, so the whole game runs
+and is fully playable today, and is a drop-in target for real art/audio/IAP
 configuration before an App Store submission.
 
 ## Opening the project
@@ -31,7 +34,9 @@ configuration before an App Store submission.
 - Replace the procedural placeholder visuals (see "Placeholder art" below)
   with real sprite art.
 - Add the audio files listed in `KawaiiRunner/Resources/Audio/AUDIO_GUIDE.md`.
-- Provide a real 1024×1024 App Icon in `Assets.xcassets/AppIcon.appiconset`.
+- Swap the generated placeholder App Icon (`Assets.xcassets/AppIcon.appiconset/icon-1024.png`)
+  for a professionally designed one — it's a real, App Store-shaped 1024×1024
+  PNG today (matches the in-game character style) but is still a placeholder.
 - Register the Game Center leaderboard ID and StoreKit products referenced
   in `GameCenterManager` and `IAPManager` in App Store Connect, and add a
   `StoreKit Configuration File` for local testing.
@@ -146,8 +151,9 @@ cycles through `WorldTheme.runOrder` every 350m (looping back to Mochi Café
 at higher difficulty). It also guarantees fairness: obstacle spawn intervals
 never drop below a reaction-time floor, and the same avoidance method
 (jump/slide/dash) never repeats back-to-back. Each world biases its
-obstacle/collectible mix and supplies its own sky/mid-ground/ground palette,
-cross-faded in smoothly by `ParallaxBackgroundManager` on transition.
+obstacle/collectible mix and supplies its own four-layer backdrop palette
+(sky zenith/horizon, sun-or-moon, mid-ground props, ground), cross-faded in
+smoothly by `ParallaxBackgroundManager` on transition.
 
 ### Score system
 `GameScene` accumulates score two ways: a small continuous trickle

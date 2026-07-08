@@ -46,6 +46,27 @@ enum WorldTheme: String, Codable, CaseIterable, Identifiable, Hashable {
         }
     }
 
+    /// Zenith (top-of-sky) color, paired with `skyHex` as the horizon color
+    /// to render a two-tone gradient sky instead of a flat fill.
+    var skyTopHex: String {
+        switch self {
+        case .mochiCafe: return "#FFF6E9"
+        case .sakuraPark: return "#FFF3F8"
+        case .bubbleTeaStreet: return "#EFE8FF"
+        case .cozyMarket: return "#FFFBE0"
+        case .nightFestival: return "#0F0E28"
+        case .rooftopGarden: return "#F3FFF5"
+        }
+    }
+
+    /// Only the Night Festival trades the sun for a moon.
+    var isNight: Bool { self == .nightFestival }
+
+    /// Color of the sun/moon disc drawn in the sky layer.
+    var celestialHex: String {
+        isNight ? "#F5F0DC" : "#FFE9A8"
+    }
+
     var midgroundHex: String {
         switch self {
         case .mochiCafe: return "#F6B99A"

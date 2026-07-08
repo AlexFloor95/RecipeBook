@@ -221,7 +221,7 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         combo.addCharge(type.comboMeterContribution)
         score += Int(20.0 * combo.scoreMultiplier)
         AudioManager.shared.playSFX(type.collectSoundEffect)
-        node.playCollectedEffect(in: self, accentColor: UIColor(hex: difficulty.currentWorld.accentHex))
+        node.playCollectedEffect(in: self)
         collectibles.removeAll { $0 === node }
     }
 

@@ -11,8 +11,10 @@ struct ComboButtonView: View {
         Button(action: action) {
             ZStack {
                 Circle()
-                    .fill(Color.white.opacity(0.85))
+                    .fill(Color.white.opacity(0.9).kawaiiGlossyGradient)
                     .frame(width: 76, height: 76)
+                    .overlay(Circle().strokeBorder(Color.white.opacity(0.6), lineWidth: 1))
+                    .kawaiiSoftShadow()
                 Circle()
                     .trim(from: 0, to: hud.comboMeterFraction)
                     .stroke(

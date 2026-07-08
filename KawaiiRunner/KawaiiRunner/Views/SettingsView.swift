@@ -56,7 +56,7 @@ struct SettingsView: View {
             }
             .scrollContentBackground(.hidden)
         }
-        .background(KawaiiPalette.creamWhite.ignoresSafeArea())
+        .kawaiiDecorativeBackdrop()
         .navigationBarHidden(true)
         .confirmationDialog(
             "This permanently deletes all progress, currency and unlocks. This can't be undone.",
