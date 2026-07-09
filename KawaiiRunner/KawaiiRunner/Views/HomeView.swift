@@ -34,8 +34,8 @@ struct HomeView: View {
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 6) {
-                CurrencyBadge(systemImage: "dollarsign.circle.fill", value: viewModel.profile.coins)
-                CurrencyBadge(systemImage: "sparkles", value: viewModel.profile.cocoTokens, tint: KawaiiPalette.lavender)
+                CurrencyBadge(systemImage: "dollarsign.circle.fill", value: viewModel.profile.coins, accessibilityName: "Coins")
+                CurrencyBadge(systemImage: "sparkles", value: viewModel.profile.cocoTokens, tint: KawaiiPalette.lavender, accessibilityName: "Coco Tokens")
             }
         }
     }
@@ -113,6 +113,7 @@ struct HomeView: View {
             .kawaiiCard()
         }
         .buttonStyle(.bouncy)
+        .accessibilityLabel(badge ? "\(title), new reward available" : title)
     }
 }
 

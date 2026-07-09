@@ -47,7 +47,10 @@ final class ObstacleNode: SKNode {
         label.position = CGPoint(x: 0, y: -2)
         addChild(label)
 
-        // A gentle, slightly-worried idle wobble so obstacles never look inert.
+        // A gentle, slightly-worried idle wobble so obstacles never look
+        // inert — skipped when the player has turned on Reduce Motion in
+        // Settings, since this is purely decorative ambient motion.
+        guard !SaveManager.shared.profile.settings.reduceMotion else { return }
         let wobble = SKAction.sequence([
             .rotate(byAngle: 0.06, duration: 0.5),
             .rotate(byAngle: -0.12, duration: 1.0),

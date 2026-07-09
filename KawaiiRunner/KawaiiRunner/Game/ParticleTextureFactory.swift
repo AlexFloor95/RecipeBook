@@ -12,7 +12,7 @@ enum ParticleTextureFactory {
 
     /// A soft radial-gradient dot, useful for sparkles, dust puffs and confetti.
     static func softDot(color: UIColor, diameter: CGFloat = 24) -> SKTexture {
-        let key = "dot_\(color.hashValue)_\(diameter)"
+        let key = "dot_\(color.particleCacheKey)_\(diameter)"
         if let cached = cache[key] { return cached }
 
         let renderer = UIGraphicsImageRenderer(size: CGSize(width: diameter, height: diameter))
@@ -33,7 +33,7 @@ enum ParticleTextureFactory {
 
     /// A tiny rounded rectangle "confetti" chip.
     static func confettiChip(color: UIColor, size: CGSize = CGSize(width: 10, height: 14)) -> SKTexture {
-        let key = "confetti_\(color.hashValue)_\(size.width)x\(size.height)"
+        let key = "confetti_\(color.particleCacheKey)_\(size.width)x\(size.height)"
         if let cached = cache[key] { return cached }
 
         let renderer = UIGraphicsImageRenderer(size: size)
@@ -49,7 +49,7 @@ enum ParticleTextureFactory {
 
     /// A tiny star shape, used for the Combo Move burst and star pickups.
     static func star(color: UIColor, diameter: CGFloat = 20) -> SKTexture {
-        let key = "star_\(color.hashValue)_\(diameter)"
+        let key = "star_\(color.particleCacheKey)_\(diameter)"
         if let cached = cache[key] { return cached }
 
         let renderer = UIGraphicsImageRenderer(size: CGSize(width: diameter, height: diameter))
@@ -72,5 +72,16 @@ enum ParticleTextureFactory {
         let texture = SKTexture(image: image)
         cache[key] = texture
         return texture
+    }
+}
+
+private extension UIColor {
+    /// `UIColor.hashValue` isn't guaranteed collision-free across visually
+    /// distinct colors, so cache keys are built from the actual RGBA
+    /// components instead — the same approach `GradientTextureFactory` uses.
+    var particleCacheKey: String {
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        getRed(&r, green: &g, blue: &b, alpha: &a)
+        return String(format: "%.3f-%.3f-%.3f-%.3f", r, g, b, a)
     }
 }

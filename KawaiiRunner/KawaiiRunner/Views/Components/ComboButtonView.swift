@@ -32,5 +32,8 @@ struct ComboButtonView: View {
         }
         .disabled(!hud.isComboReady)
         .opacity(hud.isComboActive ? 0.5 : 1.0)
+        .accessibilityLabel("Team Combo Move")
+        .accessibilityValue(hud.isComboReady ? "Ready" : "\(Int(hud.comboMeterFraction * 100)) percent charged")
+        .accessibilityHint(hud.isComboReady ? "Activates a temporary invincibility combo" : "")
     }
 }

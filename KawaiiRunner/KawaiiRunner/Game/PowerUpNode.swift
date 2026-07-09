@@ -19,6 +19,10 @@ final class PowerUpNode: SKNode {
         configurePhysics()
         position.y = groundY + laneHeight
 
+        // Skip the ambient pulse (and the glow/star-ring animations in
+        // `buildPlaceholderVisual`) under Reduce Motion — the badge is still
+        // fully visible and readable, it just doesn't animate at rest.
+        guard !SaveManager.shared.profile.settings.reduceMotion else { return }
         run(.repeatForever(.sequence([
             .scale(to: 1.12, duration: 0.4),
             .scale(to: 1.0, duration: 0.4),
@@ -37,7 +41,6 @@ final class PowerUpNode: SKNode {
         glow.alpha = 0.5
         glow.zPosition = -2
         addChild(glow)
-        glow.run(.repeatForever(.sequence([.scale(to: 1.2, duration: 0.7), .scale(to: 0.9, duration: 0.7)])))
 
         // Rotating star ring behind the badge, like a little sparkle halo.
         let starRing = SKNode()
@@ -49,8 +52,12 @@ final class PowerUpNode: SKNode {
             star.alpha = 0.85
             starRing.addChild(star)
         }
-        starRing.run(.repeatForever(.rotate(byAngle: .pi * 2, duration: 4)))
         addChild(starRing)
+
+        if !SaveManager.shared.profile.settings.reduceMotion {
+            glow.run(.repeatForever(.sequence([.scale(to: 1.2, duration: 0.7), .scale(to: 0.9, duration: 0.7)])))
+            starRing.run(.repeatForever(.rotate(byAngle: .pi * 2, duration: 4)))
+        }
 
         // Glossy golden badge.
         let badge = SKSpriteNode(texture: GradientTextureFactory.shadedSphere(baseColor: goldColor, diameter: diameter))

@@ -36,6 +36,14 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
     private var stats = RunSummary()
     private var score = 0
 
+    /// HUD state is reported to SwiftUI at a throttled ~24Hz instead of the
+    /// full 60Hz simulation rate: every report allocates a `GameHUDState`
+    /// and hops to the main actor to publish it, and the on-screen number/
+    /// progress-bar animations already smooth out the lower update rate
+    /// visually, so there's no reason to pay that cost 60 times a second.
+    private var timeSinceLastHUDReport: TimeInterval = 0
+    private static let hudReportInterval: TimeInterval = 1.0 / 24.0
+
     // MARK: - Lifecycle
 
     override func didMove(to view: SKView) {
@@ -58,12 +66,19 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         liftCooldownRemaining = 0
         shieldBlockCooldownRemaining = 0
         scoreAccumulator = 0
+        timeSinceLastHUDReport = 0
         score = 0
         stats = RunSummary(character: lead)
         leadCharacter = lead
         lastUpdateTime = nil
         isRunActive = true
+        // Reset both the input-gating flag *and* SpriteKit's own `isPaused`
+        // (inherited from SKNode): if the player restarts from the Pause
+        // Menu, the scene's real paused flag is still `true` at this point,
+        // and unless we clear it here the whole simulation stays frozen
+        // after the "fresh" run starts.
         isPaused_ = false
+        isPaused = false
 
         background = ParallaxBackgroundManager(scene: self)
         player = PlayerNode(lead: lead)
@@ -78,15 +93,22 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
 
     // MARK: - Public input API (called by GameViewModel from SwiftUI gestures)
 
+    /// Every tap is contextual rather than requiring a separate "double tap"
+    /// gesture: on the ground it jumps; tapped again while already airborne
+    /// on the way up, it double-jumps. This reads exactly like "tap again
+    /// to double jump" to the player, but responds to the very first tap
+    /// instantly — a real double-tap `UIGestureRecognizer` has to wait out
+    /// the system's double-tap interval (~0.3s) before it can even confirm a
+    /// single tap wasn't a double tap, which is a lot of latency to eat on
+    /// every single jump in a reflex-driven runner.
     func handleTap() {
         guard isRunActive, !isPaused_ else { return }
-        player.jump()
-    }
-
-    func handleDoubleTap() {
-        guard isRunActive, !isPaused_ else { return }
-        player.doubleJump()
-        stats.doubleJumpUses += 1
+        if player.state == .jumping {
+            player.doubleJump()
+            stats.doubleJumpUses += 1
+        } else {
+            player.jump()
+        }
     }
 
     func handleSwipeDown() {
@@ -283,7 +305,11 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
             scoreAccumulator -= 1
         }
 
-        reportHUD()
+        timeSinceLastHUDReport += deltaTime
+        if timeSinceLastHUDReport >= Self.hudReportInterval {
+            timeSinceLastHUDReport = 0
+            reportHUD()
+        }
     }
 
     private func distance(_ a: CGPoint, _ b: CGPoint) -> CGFloat {
@@ -293,17 +319,31 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
     }
 
     private func scrollAndRecycle(scrollDelta: CGFloat) {
-        for node in obstacles { node.position.x -= scrollDelta }
-        for node in collectibles { node.position.x -= scrollDelta }
-        for node in powerUps { node.position.x -= scrollDelta }
-
         let cutoff: CGFloat = -160
-        obstacles.filter { $0.position.x < cutoff }.forEach { $0.removeFromParent() }
-        obstacles.removeAll { $0.position.x < cutoff }
-        collectibles.filter { $0.position.x < cutoff }.forEach { $0.removeFromParent() }
-        collectibles.removeAll { $0.position.x < cutoff }
-        powerUps.filter { $0.position.x < cutoff }.forEach { $0.removeFromParent() }
-        powerUps.removeAll { $0.position.x < cutoff }
+
+        // Single pass per array: scroll, test, and (if past the cutoff)
+        // remove from the scene right inside the `removeAll(where:)`
+        // predicate, instead of the previous filter+forEach+removeAll dance
+        // which walked each array three times and allocated a throwaway
+        // array every frame just to find the nodes to despawn.
+        obstacles.removeAll { node in
+            node.position.x -= scrollDelta
+            guard node.position.x < cutoff else { return false }
+            node.removeFromParent()
+            return true
+        }
+        collectibles.removeAll { node in
+            node.position.x -= scrollDelta
+            guard node.position.x < cutoff else { return false }
+            node.removeFromParent()
+            return true
+        }
+        powerUps.removeAll { node in
+            node.position.x -= scrollDelta
+            guard node.position.x < cutoff else { return false }
+            node.removeFromParent()
+            return true
+        }
     }
 
     private func spawnIfNeeded() {

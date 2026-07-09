@@ -11,6 +11,7 @@ struct SectionHeader: View {
             Text(title)
                 .font(.system(.title2, design: .rounded)).bold()
                 .foregroundStyle(KawaiiPalette.textDark)
+                .accessibilityAddTraits(.isHeader)
             Spacer()
             if let onClose {
                 Button(action: onClose) {
@@ -18,6 +19,7 @@ struct SectionHeader: View {
                         .font(.title2)
                         .foregroundStyle(KawaiiPalette.textDark.opacity(0.4))
                 }
+                .accessibilityLabel("Close")
             }
         }
         .padding(.horizontal)

@@ -14,10 +14,12 @@ struct GameHUDView: View {
                     .font(.system(.title, design: .rounded)).bold()
                     .foregroundStyle(.white)
                     .shadow(radius: 2)
+                    .accessibilityLabel("Score \(hud.score)")
                 Text("\(hud.distanceMeters)m • \(hud.currentWorld.displayName)")
                     .font(.system(.caption, design: .rounded)).bold()
                     .foregroundStyle(.white.opacity(0.9))
                     .shadow(radius: 1)
+                    .accessibilityLabel("\(hud.distanceMeters) meters, \(hud.currentWorld.displayName)")
                 HStack(spacing: 8) {
                     if hud.isShielded {
                         Label("Shield", systemImage: "shield.fill").labelStyle(.iconOnly)
@@ -38,7 +40,8 @@ struct GameHUDView: View {
                         .foregroundStyle(.white)
                         .shadow(radius: 2)
                 }
-                CurrencyBadge(systemImage: "dollarsign.circle.fill", value: hud.coins)
+                .accessibilityLabel("Pause")
+                CurrencyBadge(systemImage: "dollarsign.circle.fill", value: hud.coins, accessibilityName: "Coins")
             }
         }
         .padding()

@@ -16,7 +16,9 @@ final class CollectibleNode: SKNode {
         configurePhysics()
         position.y = groundY + laneHeight
 
-        // Gentle bob + gentle scale pulse so pickups feel alive and inviting.
+        // Gentle bob so pickups feel alive and inviting — skipped under
+        // Reduce Motion, since it's purely decorative ambient movement.
+        guard !SaveManager.shared.profile.settings.reduceMotion else { return }
         run(.repeatForever(.sequence([
             .moveBy(x: 0, y: 8, duration: 0.5),
             .moveBy(x: 0, y: -8, duration: 0.5),
@@ -36,10 +38,12 @@ final class CollectibleNode: SKNode {
         glow.alpha = 0.55
         glow.zPosition = -1
         addChild(glow)
-        glow.run(.repeatForever(.sequence([
-            .scale(to: 1.15, duration: 0.6),
-            .scale(to: 0.95, duration: 0.6),
-        ])))
+        if !SaveManager.shared.profile.settings.reduceMotion {
+            glow.run(.repeatForever(.sequence([
+                .scale(to: 1.15, duration: 0.6),
+                .scale(to: 0.95, duration: 0.6),
+            ])))
+        }
 
         // Glossy backing sphere instead of a flat white disc.
         let backing = SKSpriteNode(texture: GradientTextureFactory.shadedSphere(baseColor: accentColor, diameter: diameter))

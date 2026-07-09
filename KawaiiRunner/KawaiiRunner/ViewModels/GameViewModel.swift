@@ -54,7 +54,6 @@ final class GameViewModel: ObservableObject {
     // MARK: - Input forwarding
 
     func onTap() { scene.handleTap() }
-    func onDoubleTap() { scene.handleDoubleTap() }
     func onSwipeDown() { scene.handleSwipeDown() }
     func onLongPressBegan() { scene.handleLongPressBegan() }
     func onLongPressEnded() { scene.handleLongPressEnded() }

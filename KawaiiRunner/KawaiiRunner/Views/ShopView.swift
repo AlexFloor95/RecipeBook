@@ -29,8 +29,8 @@ struct ShopView: View {
 
     private var currencyHeader: some View {
         HStack {
-            CurrencyBadge(systemImage: "dollarsign.circle.fill", value: viewModel.profile.coins)
-            CurrencyBadge(systemImage: "sparkles", value: viewModel.profile.cocoTokens, tint: KawaiiPalette.lavender)
+            CurrencyBadge(systemImage: "dollarsign.circle.fill", value: viewModel.profile.coins, accessibilityName: "Coins")
+            CurrencyBadge(systemImage: "sparkles", value: viewModel.profile.cocoTokens, tint: KawaiiPalette.lavender, accessibilityName: "Coco Tokens")
             Spacer()
         }
         .padding(.horizontal)

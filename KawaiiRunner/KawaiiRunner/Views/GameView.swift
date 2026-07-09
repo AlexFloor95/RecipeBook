@@ -5,8 +5,9 @@ import SpriteKit
 /// button, translates one-handed touch gestures into `GameViewModel` calls,
 /// and swaps in `PauseMenuView` / `GameOverView` as needed.
 ///
-/// Gesture mapping (per the brief): tap = jump, double tap = double jump,
-/// swipe down = slide, long press = dash.
+/// Gesture mapping: tap = jump (tap again while airborne = double jump,
+/// handled contextually by `GameScene.handleTap()` rather than as a second
+/// gesture — see the note there for why), swipe down = slide, long press = dash.
 struct GameView: View {
     @StateObject private var viewModel: GameViewModel
     @Environment(\.dismiss) private var dismiss
@@ -20,7 +21,7 @@ struct GameView: View {
             SpriteView(scene: viewModel.scene)
                 .ignoresSafeArea()
                 .contentShape(Rectangle())
-                .gesture(tapGesture)
+                .onTapGesture { viewModel.onTap() }
                 .simultaneousGesture(swipeDownGesture)
                 .onLongPressGesture(minimumDuration: 0.25, maximumDistance: 40, pressing: { isPressing in
                     if isPressing {
@@ -58,14 +59,6 @@ struct GameView: View {
     }
 
     // MARK: - Gestures
-
-    /// A single tap jumps; a double tap (within the system's default
-    /// interval) double-jumps instead. `.exclusively(before:)` makes sure a
-    /// double tap never *also* fires a single jump first.
-    private var tapGesture: some Gesture {
-        TapGesture(count: 2).onEnded { viewModel.onDoubleTap() }
-            .exclusively(before: TapGesture(count: 1).onEnded { viewModel.onTap() })
-    }
 
     private var swipeDownGesture: some Gesture {
         DragGesture(minimumDistance: 24)
